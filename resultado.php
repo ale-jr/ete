@@ -1,3 +1,10 @@
+<?php include("api/conceitos.class.php");
+
+$aluno = new Aluno($_GET["rm"]);
+$conceitos = new Conceitos($aluno);
+$resultado = $conceitos->porDisciplina();
+$total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +28,7 @@
 
 			<div class="col-lg-12 text-center v-center">
 
-				<h2 class="text-center">Notas de Alexandre</h1>
+				<h2 class="text-center">Notas de <?php echo strtok($aluno->getNome(), " "); ?></h1>
 				<p class="lead">Salve essa página nos seus favoritos!</p>
 				</div>
 
@@ -33,12 +40,32 @@
 						<h3 class="card-header">Resumo</h3>
 						<div class="card-block">
 							<h4 class="card-title">Situação das suas notas finais</h4>
-							<p class="card-text"><i class="fa fa-check fa-fw" aria-hidden="true"></i>Passou:1</p>
+							<p class="card-text"><i class="fa fa-check fa-fw" aria-hidden="true"></i>Passou: <?php echo $resultado["aprovado"]; ?></p>
 							<!--<p class="card-text"><i class="fa fa-exclamation fa-fw" aria-hidden="true"></i>Não publicada, mas teve I no ano:1</p>-->
-							<p class="card-text"><i class="fa fa-question fa-fw" aria-hidden="true"></i>Não publicadas:1</p>
-							<p class="card-text"><i class="fa fa-times fa-fw" aria-hidden="true"></i>Não passou:1</p>
+							<p class="card-text"><i class="fa fa-question fa-fw" aria-hidden="true"></i>Não publicadas:<?php  echo $resultado["indefinido"]; ?></p>
+							<p class="card-text"><i class="fa fa-times fa-fw" aria-hidden="true"></i>Não passou: <?php echo $resultado["reprovado"]; ?></p>
+							<p class="card-text"><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>Faltas: <?php echo round($total_faltas,2); ?>%</p>
 						</div>
 					</div>
+
+						<?php
+							foreach ($resultado["disciplinas"] as $disciplina) {
+								$porcentagem = ($disciplina["faltas"] *100)/$disciplina["aulas"];
+								echo "<div class=\"card\">";
+								echo "<h3 class=\"card-header\">".ucwords(strtolower($disciplina["disciplina"]))."</h3>";
+								echo "<div class=\"card-block\">";
+								echo "<h4 class=\"card-title\">". strtok($disciplina["professor"]," ")."</h4>";
+								echo "<h5><i class=\"fa fa-check-square-o fa-fw\" aria-hidden=\"true\"></i>Conceitos</h5>";
+								echo "<p class=\"card-text tab nota\">". $disciplina["conceitos"][0]. " " . $disciplina["conceitos"][1]. " " . $disciplina["conceitos"][2]. " " . $disciplina["conceitos"][3]."</p>";
+								echo "<h5><i class=\"fa fa-check-square-o fa-fw\" aria-hidden=\"true\"></i>Conceito final</h5>";
+								echo "<p class=\"card-text tab nota\">".$disciplina["conceito_final"]."</p>";
+								echo "<h5><i class=\"fa fa-sign-out fa-fw\" aria-hidden=\"true\"></i>Faltas</h5>";
+								echo "<p class=\"card-text tab nota\">".round($porcentagem,2)."%</p>";
+								echo "</div></div>";
+							}
+
+					 ?>
+					 <!--
 					<div class="card">
 						<h3 class="card-header">Inlglês</h3>
 						<div class="card-block">
@@ -51,18 +78,7 @@
 							<p class="card-text tab nota">70%</p>
 						</div>
 					</div>
-					<div class="card">
-						<h3 class="card-header">Matemática</h3>
-						<div class="card-block">
-							<h4 class="card-title">Gerson</h4>
-							<h5><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i>Conceitos</h5>
-							<p class="card-text tab nota">R I B MB</p>
-							<h5><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i>Conceito final</h5>
-							<p class="card-text tab nota">MB</p>
-							<h5><i class="fa fa-sign-out fa-fw" aria-hidden="true"></i>Faltas</h5>
-							<p class="card-text tab nota">40%</p>
-						</div>
-					</div>
+				-->
 
 				</div><!--/col-lg-12 -->
 			</div><!-- /row -->

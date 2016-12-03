@@ -6,6 +6,7 @@ include("aluno.class.php");
 class Conceitos
 {
 
+  private $tabela_conceitos;
   function __construct($aluno)
   {
     if(is_string($aluno)){
@@ -62,73 +63,129 @@ class Conceitos
           array_push($conceitos,$conceito);
         }
       }
+      $this->tabela_conceitos = $conceitos;
+    }
 
 
+    public function porDisciplina(){
+      $conceitos = $this->tabela_conceitos;
       //ordena por matéria
       usort($conceitos, "compararDisciplina");
-      $ultima_disciplina =  $conceitos[0]['disciplina'];
-      $disciplina_conceitos = array();
-      $disciplinas = array();
-      $aulas = 0;
-      $faltas = 0;
-      $professor = "";
-      $conceito_final = "";
-      $arr_conceitos = array("?","?","?","?");
-      foreach ($conceitos as $conceito) {
 
-        if($conceito["disciplina"] == $ultima_disciplina){
-          echo $conceito["disciplina"] . "\n";
-          $aulas = $aulas+ $conceito["aulas"];
-          $faltas = $faltas + $conceito["faltas"];
-          if($conceito["conceito"] == "I" ||$conceito["conceito"] == "R" || $conceito["conceito"] == "B" || $conceito["conceito"] == "MB"){
-            switch ($conceito["mes"]) {
+      //serve para fazer um loop a mais no foreach (para salvar a última disciplina)
+      $final = array(
+        'mes' => '',
+        'professor' => '',
+        'disciplina' =>'',
+        'aulas' =>'',
+        'faltas' =>'',
+        'conceito'=> '',
+        'conceito_final' =>'');
+        array_push($conceitos,$final);
+
+        //return
+        $resultado = array();
+
+        //variaveis do loop
+        $disc_atual = $conceitos[0]["disciplina"];
+        $disc_aulas = 0;
+        $disc_faltas = 0;
+        //array tava bugando, então eu aprei as variaveis;
+        $disc_conceitos_1 = "?";
+        $disc_conceitos_2 = "?";
+        $disc_conceitos_3 = "?";
+        $disc_conceitos_4 = "?";
+        $disc_conceito_final = "?";
+        $disc_professor = "";
+        $total_aulas = 0;
+        $total_faltas = 0;
+        foreach ($conceitos as $conceito) {
+          //salva dados, passa para a próxima disciplina
+          if($conceito["disciplina"] != $disc_atual){
+            $d = array("disciplina" => $disc_atual, "aulas" => $disc_aulas, "faltas" => $disc_faltas, "conceitos" => array($disc_conceitos_1,$disc_conceitos_2,$disc_conceitos_3,$disc_conceitos_4),"conceito_final" => $disc_conceito_final,"professor" => $disc_professor);
+            array_push($resultado,$d);
+            $disc_conceitos_1 = "?";
+            $disc_conceitos_2 = "?";
+            $disc_conceitos_3 = "?";
+            $disc_conceitos_4 = "?";
+            $disc_conceito_final = "?";
+            $disc_professor = "";
+            $total_aulas += $disc_aulas;
+            $total_faltas += $disc_faltas;
+            $disc_faltas = 0;
+            $disc_aulas = 0;
+            $disc_atual = $conceito["disciplina"];
+          }
+          //conceitos
+          if($conceito["conceito"] != "-"){
+            $mes = str_replace(" ",'',$conceito["mes"]);
+            switch ($mes) {
               case 'ABRIL':
-              $replace = array(0 => $conceito["conceito"]);
-              $array_replace($arr_conceitos,$replace);
+              $disc_conceitos_1 = $conceito["conceito"];
               break;
-              case 'JUNHO e JULHO':
-              $replace = array(1 => $conceito["conceito"]);
-              $array_replace($arr_conceitos,$replace);
+              case 'JUNHOeJULHO':
+              $disc_conceitos_2 = $conceito["conceito"];
               break;
               case 'SETEMBRO':
-              $replace = array(2 => $conceito["conceito"]);
-              $array_replace($arr_conceitos,$replace);
+              $disc_professor = $conceito["professor"];
+              $disc_conceitos_3 = $conceito["conceito"];
               break;
               case 'NOVEMBRO-DEZEMBRO':
-              $replace = array(3 => $conceito["conceito"]);
-              $array_replace($arr_conceitos,$replace);
+              $disc_conceitos_4 = $conceito["conceito"];
               break;
             }
-            print_r($arr_conceitos);
-            echo $conceito["conceito"];
           }
           if($conceito["conceito_final"] != "-"){
-            $conceito_final = $conceito["conceito_final"];
+            $disc_professor = $conceito["professor"];
+            $disc_conceito_final = $conceito["conceito_final"];
           }
-          $professor = $conceito["professor"];
+
+          //aulas e faltas
+          $disc_aulas += $conceito["aulas"];
+          $disc_faltas += $conceito["faltas"];
+
+
         }
-        else {
-          echo "Trocou";
-          $d = new Disciplina($professor,$ultima_disciplina,$aulas,$faltas,$arr_conceitos,$conceito_final);
-          array_push($disciplinas,$d);
-          $arr_conceitos = array("?","?","?","?");
-          $ultima_disciplina = $conceito["disciplina"];
+        $indefinidas = 0;
+        $reprovado = 0;
+        $aprovado = 0;
+        foreach ($resultado as $disciplina) {
+          switch ($disciplina["conceito_final"]) {
+            case '?':
+            $indefinidas ++;
+            break;
+            case 'I':
+            $reprovado++;
+            break;
+            case 'R':
+            $aprovado++;
+            break;
+            case 'B':
+            $aprovado++;
+            break;
+            case 'MB':
+            $aprovado++;
+            break;
+          }
         }
+
+        return array("disciplinas" =>$resultado, "aulas" => $total_aulas, "faltas"=> $total_faltas,"aprovado"=> $aprovado,"reprovado" => $reprovado,"indefinido"=>$indefinidas,"total" => count($resultado));
+      } //fim do método porDisciplina
+
+    } //fim da classe
+
+    function compararDisciplina($a, $b) {
+      if ($a['disciplina'] == $b['disciplina']) {
+        return 0;
       }
-      var_dump($disciplinas);
-
+      return ($a['disciplina'] < $b['disciplina']) ? -1 : 1;
     }
-  }
 
-  function compararDisciplina($a, $b) {
-    if ($a['disciplina'] == $b['disciplina']) {
-      return 0;
-    }
-    return ($a['disciplina'] < $b['disciplina']) ? -1 : 1;
-  }
 
-  class Disciplina
-  {
+
+    /*
+    class Disciplina
+    {
     private $professor;
     private $nome;
     private $conceitos;
@@ -139,35 +196,36 @@ class Conceitos
 
     //NOME DO PROFESSOR	NOME DA DISCIPLINA	N. AULAS DADAS	NUMERO DE FALTAS	CONCEITO BIMESTRAL	CONCEITO FINAL
     function __construct($p,$n,$a,$f,$c,$cf){
-      $this->professor= $p;
-      $this->nome = $n;
-      $this->aulas = $a;
-      $this->faltas = $f;
-      $this->conceitos = $c;
-      $this->conceito_final = $cf;
-    }
-
-    public function getProfessor(){
-      return $this->professor;
-    }
-
-    public function getNome(){
-      return $this->nome;
-    }
-
-    public function getConceitos(){
-      return $this->conceitos;
-    }
-
-    public function getConceitoFinal(){
-      return $this->conceito_final;
-    }
-
-    public function getAulas(){
-      return $this->aulas;
-    }
-
-    public function getFaltas(){
-      return $this->faltas;
-    }
+    $this->professor= $p;
+    $this->nome = $n;
+    $this->aulas = $a;
+    $this->faltas = $f;
+    $this->conceitos = $c;
+    $this->conceito_final = $cf;
   }
+
+  public function getProfessor(){
+  return $this->professor;
+}
+
+public function getNome(){
+return $this->nome;
+}
+
+public function getConceitos(){
+return $this->conceitos;
+}
+
+public function getConceitoFinal(){
+return $this->conceito_final;
+}
+
+public function getAulas(){
+return $this->aulas;
+}
+
+public function getFaltas(){
+return $this->faltas;
+}
+}
+*/
