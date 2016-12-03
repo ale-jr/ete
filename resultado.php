@@ -1,9 +1,18 @@
 <?php include("api/conceitos.class.php");
+if(isset($_GET["rm"])){
+	$aluno = new Aluno($_GET["rm"]);
+	if($aluno->getNome()){
+		$conceitos = new Conceitos($aluno);
+		$resultado = $conceitos->porDisciplina();
+		$total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
+	}
+	else {
 
-$aluno = new Aluno($_GET["rm"]);
-$conceitos = new Conceitos($aluno);
-$resultado = $conceitos->porDisciplina();
-$total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
+	}
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -89,5 +98,15 @@ $total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
 		<!-- script references -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
+		<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-88421248-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 	</body>
 	</html>

@@ -77,3 +77,8 @@ h2 {
   font-size: 100%;
   font-weight: 900;
 }
+
+.center-img {
+    display: block;
+    margin: 0 auto;
+}
