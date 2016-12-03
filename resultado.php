@@ -7,7 +7,7 @@ if(isset($_GET["rm"])){
 		$total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
 	}
 	else {
-
+		header("location:erro.php");
 	}
 }
 

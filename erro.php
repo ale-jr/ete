@@ -22,7 +22,7 @@
          <div class="col-lg-12 text-center v-center">
 
            <h1>RM Incorreto</h1>
-           <img src="nilton.gif" class="center-img"/>
+           <img src="nilton.gif" class="img-responsive center-img"/>
        </div>
 
  </div> <!-- /container full -->
