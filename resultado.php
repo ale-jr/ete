@@ -5,7 +5,7 @@ if(isset($_GET["rm"])){
 		$conceitos = new Conceitos($aluno);
 		$resultado = $conceitos->porDisciplina();
 		$total_faltas = ($resultado["faltas"] *100)/$resultado["aulas"];
-		if(resultado["aulas"]<1){
+		if($resultado["aulas"]<1){
 			header("location:erro.php");
 		}
 	}
