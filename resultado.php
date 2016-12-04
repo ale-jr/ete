@@ -1,5 +1,6 @@
 <?php include("api/conceitos.class.php");
 if(isset($_GET["rm"])){
+	strtoupper($_GET["rm"])
 	$aluno = new Aluno($_GET["rm"]);
 	if($aluno->getNome()){
 		$conceitos = new Conceitos($aluno);
