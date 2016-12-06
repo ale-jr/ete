@@ -20,7 +20,7 @@ class Conceitos
     $numero = $aluno->getNumero();
 
     //URL da página de faltas
-    $url = 'http://www.etelg.com.br/notas/faltamensal.asp';
+    $url = 'http://etec.educacao.ws/notas/faltamensal.asp';
 
     //dados do post da página
     $data = array('txtnum'=>$numero,'txtano' => $ano,'txtserie' => $serie,'txtturma' => $turma,'txtcod' => $id);
